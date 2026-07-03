@@ -1,0 +1,8 @@
+{
+  "admin": { "id": "admin", "name": "Главный Админ", "password": "admin007" },
+  "teachers": [],
+  "students": [],
+  "groups": [],
+  "messages": [],
+  "cyberons": {}
+}
