@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>CyberOne - Дневник</title>
+    <style>
+        /* Стили киберпанк добавь из предыдущего ответа */
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Экран авторизации -->
+        <div id="login-screen">
+            <h1>CyberOne</h1>
+            <select id="role-select">
+                <option value="admin">Администратор</option>
+                <option value="teacher">Учитель</option>
+                <option value="student">Ученик</option>
+            </select>
+            <input type="text" id="username" placeholder="Логин">
+            <input type="password" id="password" placeholder="Пароль">
+            <button onclick="login()">Войти</button>
+        </div>
+
+        <!-- Панель управления (меняется в зависимости от роли) -->
+        <div id="dashboard" style="display:none;">
+            <!-- Здесь динамически отображаем интерфейс -->
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        function login() {
+            const role = document.getElementById('role-select').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            socket.emit('login', { role, username, password });
+        }
+
+        socket.on('login_success', (data) => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            // Рендерим панель в зависимости от data.role
+            if (data.role === 'admin') renderAdminPanel(data.user);
+            else if (data.role === 'teacher') renderTeacherPanel(data.user);
+            else renderStudentPanel(data.user);
+        });
+
+        socket.on('login_error', (msg) => alert(msg));
+
+        function renderAdminPanel(admin) {
+            const dash = document.getElementById('dashboard');
+            dash.innerHTML = `
+                <h2>Панель администратора: ${admin.name}</h2>
+                <button onclick="changeAdminPassword()">Сменить пароль</button>
+                <button onclick="addTeacherForm()">Добавить учителя (${DB.teachers.length}/20)</button>
+                <div id="teachers-list"></div>
+                <div id="chat-window"></div>
+            `;
+        }
+        // Функции changeAdminPassword, addTeacherForm и т.д. реализовать через socket.emit
+    </script>
+</body>
+</html>
